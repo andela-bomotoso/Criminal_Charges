@@ -1,5 +1,6 @@
 package com.example.bukola_omotoso.criminal_intent;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,6 +30,12 @@ public class CrimeListFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume()  {
+        super.onResume();
+        updateUI();
+    }
+
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener   {
         private Crime crime;
         private TextView titleTextView;
@@ -45,7 +52,11 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
-            Toast.makeText(getActivity(),crime.getCrimeTitle() + " clicked!", Toast.LENGTH_LONG).show();
+//            Toast.makeText(getActivity(),crime.getCrimeTitle() + " clicked!", Toast.LENGTH_LONG).show();
+            //Intent intent = new Intent(getActivity(),CrimeActivity.class);
+            Intent intent = CrimeActivity.newIntent(getActivity(),crime.getCrimeId());
+            startActivity(intent);
+
         }
 
         private void bindView(Crime crime)  {
@@ -81,14 +92,18 @@ public class CrimeListFragment extends Fragment {
         public int getItemCount() {
             return crimes.size();
         }
+
     }
 
     private void updateUI() {
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
-        crimeAdapter = new CrimeAdapter(crimes);
-        crimeRecycleView.setAdapter(crimeAdapter);
-
+        if(crimeAdapter == null) {
+            crimeAdapter = new CrimeAdapter(crimes);
+            crimeRecycleView.setAdapter(crimeAdapter);
+        }   else    {
+            crimeAdapter.notifyDataSetChanged();
+        }
     }
 
 }
